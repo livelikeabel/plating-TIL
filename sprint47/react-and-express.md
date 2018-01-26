@@ -1,5 +1,56 @@
 #React & Express Webapp
 
+### ES6 클래스
+
+- 컴포넌트는 그냥 자바스크립트 클래스 이다.(react 컴포넌트 class를 상속한다.)
+
+```javascript
+class Codelab extends React.Compenent {
+  
+}
+```
+
+- class는 es6에 새로 도입된 문법이다.
+
+*클래스 선언 예.*
+
+```javascript
+class Polygon {
+  //다른 언어가 그렇듯이, 생성자 메소드가 있다. 클래스가 새로 만들어 질 때, 실행되는 메소드.
+  constructor(height, width){ 
+    this.height = height;
+    this.width = width;
+  }
+}
+```
+
+- js 클래스 안에서는 메소드만 만들 수 있다.
+- 클래스를 사용할 때, 꼭 클래스를 먼저 선언해야한다.(클래스 선언전에 클래스를 사용하면 error)
+
+아래의 스타일 처럼 만들 수 도 있다.
+
+```javascript
+//unnamed
+var Polygon = class {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+
+//named
+var Polygon = class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+```
+
+- 상속을 했을시, super키워드를 통해 부모 클래스를 호출 할 수 있다.
+
+-----
+
 ### JSX의 특징
 
 1. 모든  JSX형태의 코드는 container element 안에 포함 해주어야 한다.(container element가 없으면 error  발생)
@@ -48,6 +99,8 @@ render(){
 Type을 검증할 때는 컴포넌트의 선언이 끝난후, propTypes를 설정하면된다.(type종류는 많다. 리액트 메뉴얼을 보자)
 
 proptypes를 지정하는 것은 필수가 아니다. 그러나 만든 컴포넌트가 제대로 사용되기 위해서, 유지보수를 위해서 설정하는 것이다.
+
+------------
 
 
 
