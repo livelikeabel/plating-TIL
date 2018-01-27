@@ -102,5 +102,38 @@ proptypes를 지정하는 것은 필수가 아니다. 그러나 만든 컴포넌
 
 ------------
 
+### State
 
+- component 에서 유동적인 데이터를 보여줄 때 사용된다.
+- 사용할 때, 초기값 설정이 필수이다. 생성자(constructor)에서 this.state = { }으로 설정. // constructor의 parameter는 props이다..? - constructor가 만들어 질 때, 전달 받을것이다.
+- 값을 수정 할 때에는 this.setState({…})을 통하여(component 내에서), 렌더링 된 다음엔 this.state = 절대 사용하지 말것.
+
+```javascript
+class Counter extends React.Component{
+  //생성자메소드의 parameter는 props이다. Counter가 만들어질 때, 전달받을 props이다.
+  constructor(props) {
+    //super를 통하여 상속받은 클래스인 React.Component(즉 parents의 생성자 메소드를 먼저 실행하고, 우리가 할 작업들을 하는것이다. super(props)를 먼저 실행해주어야, 이 메소드 안에서 this.state라던지, props라던지를 접근할 수 있다.)
+    super(props);
+    this.state = {
+      value: 0
+    };
+  }
+  
+  handleClick(){
+    this.setState({
+      value:this.state.value + 1
+    });
+  }
+  
+  render() {
+    return(
+      <div>
+        <h2>{this.state.value}</h2>
+        //this를 바인딩 해주어야함. handleClick에서 사용될 this는 render에서 사용되는 this와 같다.(bind(this)부분이 아직 잘 이해가 가진 않는다.)
+        <button onClick={this.handleClick.bind(this)}>Press Me</button>
+      </div>
+    )
+  }
+}
+```
 
