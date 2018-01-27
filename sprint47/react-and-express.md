@@ -137,3 +137,136 @@ class Counter extends React.Component{
 }
 ```
 
+-----
+
+### Component Mapping
+
+비슷한 코드를 반복해서 렌더링하는 방법...?
+
+데이터 배열을 리액트에서 렌더링 할 땐 자바스크립트의 내장 함수인 map을 사용한다.
+
+***Map() : parameter로 전달 된 함수를 통하여 배열 내의 각 요소를 처리해서 그 결과로 새로운 배열을 생성합니다.***
+
+**arr.map(callback, [thisArg])**
+
+callback : 새로운 배열의 요소를 생성하는 함수로서, 다음 세가지 인수를 가집니다.
+
+​	currentValue : 현재 처리되고 있는 요소
+
+​	index : 현재 처리되고 있는 요소의 index 값
+
+​	array : 메소드가 불려진 배열
+
+thisArg(선택항목) callback 함수 내부에서 사용 할 this 값을 설정
+
+```javascript
+ex)
+let numbers = [1,2,3,4,5];
+
+let result = numbers.map((num) => {
+  return num*num;
+});
+//result = [1,4,9,16,25];
+```
+
+**잠깐 짚고가는 es6문법**
+
+```javascript
+//함수가 parameter가 1개 이고, 실행할 함수내부도 1줄일 때.
+let one = a => console.log(a);  //es6
+
+var one = function(a) {  //es5
+  return console.log(a);
+};
+
+//parameter가 2개이고, 실행할 함수내부도 1줄일 때.
+let two = (a,b) => console.log(a,b); //es6
+
+var two = function(a,b){
+  return console.log(a,b);
+};
+
+//함수의 내부가 여러개일 경우, bracket을 사용한다.
+let three = (c,d) => { //es6
+  console.log(c);
+  console.log(d);
+};
+
+var three = function(c,d) { //es5
+  console.log(c);
+  console.log(d);
+};
+//parameter가 없을때
+let four = () => {		//es6
+  console.log('no params');
+}
+
+var four = function(){  //es5
+  console.log('no params');
+}
+```
+
+
+
+**Component mapping**
+
+```javascript
+class ContactInfo extends React.Component {
+  render() {
+    return( //props를 객체형식으로 받아와 사용하여 이름과 번호 렌더링
+      <div>{this.props.contact.name}{this.props.contact.phone}</div>
+    )
+  }
+}
+
+class Contact extends React.Component {
+  //state를 사용한다. 생성자 메소드에서 state를 초기화 한다.
+  constructor(props) {
+    super(props);
+    this.state = {
+      contactData: [
+        {name:'Abel',phone:'010-0000-0001'},
+        {name:'Betty',phone:'010-0000-0002'},
+        {name:'Charlie',phone:'010-0000-0003'},
+        {name:'David',phone:'010-0000-0004'}
+      ]
+    }
+    
+  }
+  render() {
+    //const : 변할일 없는 값을 선언할 때 사용
+    const mapToComponent = (data) => {
+      //contact는 data 배열의 각 데이터를 contact로 받아들이는 것, 그 데이터의 index를 i로 받아들임.
+      return data.map((contact,i) => {
+        //component를 리턴한다. key는 각 data의 식별자
+        return(<ContactInfo contact={contact} key={i}/>);
+      });
+    };
+    
+    
+    return(
+      <div>
+        {mapToComponent(this.state.contactData)}
+      </div>
+    );
+  }
+}
+
+class App extends React.Component {
+  render() {
+    return (
+      <Contact/>
+    );
+  }
+};
+
+ReactDOM.render(
+  <App></App>,
+  document.getElementById("root")
+);
+```
+
+
+
+
+
