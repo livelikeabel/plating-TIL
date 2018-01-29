@@ -587,5 +587,96 @@ export default App;
 </html>
 ```
 
+----
+
+### State 내부 배열 처리하기 | Immutability Helper / ES6 spread
+
+state는 안에있는 데이터는 직접 수정하면 안되고, 무조건 setState를 통해 수정해야한다.
+
+그렇다면, state안의 배열은 어떻게 수정해야하나? js 내장함수인 push는 절대 쓰면 안된다(배열 자체를 변경해버리기 때문이다.)
+
+```javascript
+this.setState({
+  list:this.state.list.concat(newObj)
+})
+```
+
+concat 함수를 사용하여 값을 추가하고 그 결과를 배열이 새 값으로 설정하면 된다.
+
+concat 함수는 기존 배열을 그대로 두고, 새 배열을 만든다.
+
+
+
+또 다른 방법으로는, **Immutability Helper** 를 사용하는 방법도 있다.
+
+객체나 배열을 좀 더 쉽게 수정할 수 있게 해준다. facebook의 immutable.js를 사용한다.
+
+> npm을 통해 설치하면 된다.
+>
+> ```
+> npm install --save react-addons-update
+> import update from 'react-addons-update'
+> ```
+
+
+
+**원소추가**
+
+```javascript
+this.setState({
+  list:update(
+  		this.state.list,
+    	{
+    	  $push: [newObj,newObj2]  
+	    }
+  )
+});
+```
+
+import한 update는 함수형태이고, update함수의 첫번째 인자는 처리해야할 <u>객체</u>나 <u>배열</u>이며, 두번째 인수는 처리 명령을 지니고 있는 객체이다. Push를 통하여 list배열에, newObj 두개를 추가한다.(한개의 객체를 추가할 때도 배열 형태로 감싸주어야 한다.)
+
+
+
+**원소제거**
+
+```javascript
+this.setState({
+  list:update(
+	  	this.state.list,
+        {
+		  $splice[[index,1]]
+        }
+  )
+});
+```
+
+위 코드는 list의 배열이 index item부터 시작해서, 1개의 데이터를 제거한다는 의미이다.(splice에 전달되는 데이터는 배열로 이루어진 배열)
+
+
+
+**원소수정**
+
+```javascript
+this.setState({
+  list:update(
+  		this.state.list,//list가 배열이 아니라 객체여도 괜찮다.
+        {
+          [index]:{//배열일때는, index가 아닌, 객체의 key가 들어간다.
+            field: {$set:"value"},
+            field2: {$set:"value2"}
+          }
+        }
+  )
+});
+```
+
+위 코드는 list 배열의 index번째 아이템의 field와 field2 값을 변경하는 코드이다.(set이 사용된다)
+
+
+
+
+
+
+
 
 
