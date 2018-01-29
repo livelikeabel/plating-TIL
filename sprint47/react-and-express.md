@@ -988,3 +988,205 @@ ContactCreate.defaultProps = {
 }
 ```
 
+----
+
+### Contact 데이터 삭제/수정 기능 구현|컴포넌트 응용
+
+```javascript
+//Contact.js
+import React from 'react';
+import ContactInfo from './ContactInfo';
+import ContactDetails from './ContactDetails';
+import ContactCreate from './ContactCreate';
+
+import update from 'react-addons-update';
+
+export default class Contact extends React.Component {
+
+    constructor(props) {// constructor는 자동으로 바뀌지 않음. 새로고침 해주어야함.
+        super(props);
+        this.state = {
+            selectedKey: -1,
+            keyword: '',
+            contactData: [{
+                name: 'Abel',
+                phone: '010-0000-0001'
+            }, {
+                name: 'Betty',
+                phone: '010-0000-0002'
+            }, {
+                name: 'Charlie',
+                phone: '010-0000-0003'
+            }, {
+                name: 'David',
+                phone: '010-0000-0004'
+            }]
+        };
+
+        this.handleChange = this.handleChange.bind(this);//binding을 해준다.
+        this.handleClick = this.handleClick.bind(this);//임의의 메소드를 만들 때는 항상 this와 바인딩을 해주어야 한다.
+
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleRemove = this.handleRemove.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+    }
+
+    handleChange(e) {
+        this.setState({//this가 뭔지 모르기에 binding 해주어야 함.
+            keyword: e.target.value
+        });
+    }
+
+    handleClick(key) { //key 값을 parameter로 받음
+        this.setState({
+            selectedKey: key
+        });
+
+        console.log(key, 'is selected');
+    }
+
+    handleCreate(contact) { //onCreate???
+        this.setState({
+            contactData: update(this.state.contactData, { $push: [contact] })//하나를 추가해도 배열 형태로 해주어야함
+        });
+    }
+
+    handleRemove() {
+        if(this.state.selectedKey < 0) { // 선택한contact가 없는경우 id값이 -1임으로 remove되지 않는다.
+            return;
+        }
+
+        this.setState({
+            contactData: update(this.state.contactData,
+                { $splice: [[this.state.selectedKey, 1]]}//selectedKey번째 부터 1개의 데이터 삭제, 베열의 배열 전달
+            ),
+            selectedKey: -1
+        });
+    }
+
+    handleEdit(name, phone) {
+        this.setState({
+            contactData: update(this.state.contactData,
+                {
+                    [this.state.selectedKey]: {
+                        name: { $set: name },
+                        phone: { $set: phone }
+                    }
+                }
+            )
+        })
+    }
+
+    render() {
+        const mapToComponents = (data) => {
+            data.sort();
+            data = data.filter(
+              (contact) => {
+                  return contact.name.toLowerCase()
+                      .indexOf(this.state.keyword) > -1;
+              }
+            )
+            return data.map((contact, i) => {
+                return (<ContactInfo
+                            contact={contact}
+                            key={i}
+                            onClick={() => this.handleClick(i)}/>);
+            });
+        };
+
+        return (
+            <div>
+                <h1>Contacts</h1>
+                <input
+                    name="keyword"
+                    placeholder="Search" //값을 state를 사용할 것.
+                    value={this.state.keyword}
+                    onChange={this.handleChange}
+                />
+                <div>{mapToComponents(this.state.contactData)}</div>
+                <ContactDetails
+                    isSelected={this.state.selectedKey != -1}
+                    contact={this.state.contactData[this.state.selectedKey]}
+                    onRemove={this.handleRemove}
+                    onEdit={this.handleEdit}
+                    />
+                <ContactCreate
+                    onCreate={this.handleCreate}
+                />
+            </div>
+        );
+    }
+}
+```
+
+```javascript
+//ContactDetails.js
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default class ContactCreate extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            phone: ''
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleChange(e) {
+        let nextState = {};
+        nextState[e.target.name] = e.target.value;//e.target.name이 가리키는건 input의 name이다.
+        this.setState(nextState);
+    }
+
+    handleClick() {
+        const contact = {
+            name: this.state.name,
+            phone: this.state.phone
+        };
+
+        this.props.onCreate(contact);
+
+        this.setState({
+            name:'',
+            phone:''
+        });
+    }
+
+    render() {
+        return (
+            <div>
+                <h2>Create Contact</h2>
+                <p>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="name"
+                        value={this.state.name}
+                        onChange={this.handleChange}
+                    />
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="phone"
+                        value={this.state.phone}
+                        onChange={this.handleChange}
+                    />
+                </p>
+                <button onClick={this.handleClick}>Create</button>
+            </div>
+        )
+    }
+}
+
+ContactCreate.propTypes = {
+    onCreate: PropTypes.func
+};
+
+ContactCreate.defaultProps = {
+    onCreate: () => { console.error('onCreate not defined'); }
+}
+```
+
