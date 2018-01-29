@@ -421,3 +421,171 @@ export default App;
 
 ```
 
+----
+
+### Contact 선택기능 구현
+
+```javascript
+//contact.js
+import React from 'react';
+import ContactInfo from './ContactInfo';
+import ContactDetails from './ContactDetails';
+
+export default class Contact extends React.Component {
+
+    constructor(props) {// constructor는 자동으로 바뀌지 않음. 새로고침 해주어야함.
+        super(props);
+        this.state = {
+            selectedKey: -1,
+            keyword: '',
+            contactData: [{
+                name: 'Abel',
+                phone: '010-0000-0001'
+            }, {
+                name: 'Betty',
+                phone: '010-0000-0002'
+            }, {
+                name: 'Charlie',
+                phone: '010-0000-0003'
+            }, {
+                name: 'David',
+                phone: '010-0000-0004'
+            }]
+        };
+
+        this.handleChange = this.handleChange.bind(this);//binding을 해준다.
+        this.handleClick = this.handleClick.bind(this);//임의의 메소드를 만들 때는 항상 this와 바인딩을 해주어야 한다.
+
+    }
+
+    handleChange(e) {
+        this.setState({//this가 뭔지 모르기에 binding 해주어야 함.
+            keyword: e.target.value
+        });
+    }
+
+    handleClick(key) { //key 값을 parameter로 받음
+        this.setState({
+            selectedKey: key
+        });
+
+        console.log(key, 'is selected');
+    }
+
+    render() {
+        const mapToComponents = (data) => {
+            data.sort();
+            data = data.filter(
+              (contact) => {
+                  return contact.name.toLowerCase()
+                      .indexOf(this.state.keyword) > -1;
+              }
+            )
+            return data.map((contact, i) => {
+                return (<ContactInfo
+                            contact={contact}
+                            key={i}
+                            onClick={() => this.handleClick(i)}/>);
+            });
+        };
+
+        return (
+            <div>
+                <h1>Contacts</h1>
+                <input
+                    name="keyword"
+                    placeholder="Search" //값을 state를 사용할 것.
+                    value={this.state.keyword}
+                    onChange={this.handleChange}
+                />
+                <div>{mapToComponents(this.state.contactData)}</div>
+                <ContactDetails
+                    isSelected={this.state.selectedKey != -1}
+                    contact={this.state.contactData[this.state.selectedKey]}/>
+            </div>
+        );
+    }
+}
+```
+
+```javascript
+//ContactInfo.js
+import React from 'react';
+
+export default class ContactInfo extends React.Component {//export default 가 처음부터 들어온다.(보기 더 쉽다.)
+    render() {
+        return (
+            <div onClick={this.props.onClick}>{this.props.contact.name}</div>//props에 onClick이벤트를 설정해 주어야한다.
+        );
+    }
+}
+```
+
+```javascript
+//ContactDetails.js
+import React from  'react';
+
+export default class ContactDetails extends React.Component {
+    render() {
+
+        const details = (
+          <div>
+              <p>{this.props.contact.name}</p>
+              <p>{this.props.contact.phone}</p>
+          </div>
+        );
+        const blank = (<div>Not Selected</div>);
+
+        return (
+            <div>
+                <h2>Details</h2>
+                {this.props.isSelected ? details : blank }
+            </div>
+        );
+    }
+}
+
+ContactDetails.defaultProps = {
+    contact: {
+        name: '',
+        phone: ''
+    }
+}
+```
+
+```javascript
+//App.js
+import React from 'react';
+import Contact from './Contact';
+
+class App extends React.Component {
+    render() {
+        return (
+            <Contact/>//contact 렌더링
+        );
+    }
+}
+
+export default App;
+```
+
+```javascript
+//index.html
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <meta charset="UTF-8">
+      <title>React App</title>
+   </head>
+
+   <body>
+      <div id="root"></div>
+      <script src="bundle.js"></script>
+   </body>
+
+</html>
+```
+
+
+
