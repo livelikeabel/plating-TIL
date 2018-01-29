@@ -278,5 +278,146 @@ Webpack-dev-server : 별도의 서버를 구축하지 않고도 static파일을 
 
 -----
 
+## contact 만들기
 
+### contact 검색기능 구현
+
+**input, sort, filter**
+
+
+
+**sort**
+
+```javascript
+arr.sort([compareFunction])
+```
+
+> 기존 배열을 바꾼다.
+
+
+
+**filter**
+
+```Javascript
+var new_array = arr.filter(callback[, thisArg])
+```
+
+> 새로운 배열을 리턴한다.
+
+
+
+```javascript
+//contact.js
+import React from 'react';
+import ContactInfo from './ContactInfo';
+
+export default class Contact extends React.Component {
+
+    constructor(props) {// constructor는 자동으로 바뀌지 않음. 새로고침 해주어야함.
+        super(props);
+        this.state = {
+            keyword: '',
+            contactData: [{
+                name: 'Abel',
+                phone: '010-0000-0001'
+            }, {
+                name: 'Betty',
+                phone: '010-0000-0002'
+            }, {
+                name: 'Charlie',
+                phone: '010-0000-0003'
+            }, {
+                name: 'David',
+                phone: '010-0000-0004'
+            }]
+        };
+
+        this.handleChange = this.handleChange.bind(this);//binding을 해준다.
+    }
+
+    handleChange(e) {
+        this.setState({//this가 뭔지 모르기에 binding 해주어야 함.
+            keyword: e.target.value
+        });
+    }
+    render() {
+        const mapToComponents = (data) => {
+            data.sort();
+            data = data.filter(
+              (contact) => {
+                  return contact.name.toLowerCase()
+                      .indexOf(this.state.keyword) > -1;
+              }
+            )
+            return data.map((contact, i) => {
+                return (<ContactInfo contact={contact} key={i}/>);
+            });
+        };
+
+        return (
+            <div>
+                <h1>Contacts</h1>
+                <input
+                    name="keyword"
+                    placeholder="Search" //값을 state를 사용할 것.
+                    value={this.state.keyword}
+                    onChange={this.handleChange}
+                />
+                <div>{mapToComponents(this.state.contactData)}</div>
+            </div>
+        );
+    }
+}
+
+```
+
+```javascript
+//ContactInfo.js
+import React from 'react';
+
+export default class ContactInfo extends React.Component {//export default 가 처음부터 들어온다.(보기 더 쉽다.)
+    render() {
+        return (
+            <div>{this.props.contact.name} {this.props.contact.phone}</div>
+        );
+    }
+}
+
+```
+
+```javascript
+//App.js
+import React from 'react';
+import Contact from './Contact';
+
+class App extends React.Component {
+    render() {
+        return (
+            <Contact/>//contact 렌더링
+        );
+    }
+}
+
+export default App;
+
+```
+
+```javascript
+//index.html
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <meta charset="UTF-8">
+      <title>React App</title>
+   </head>
+
+   <body>
+      <div id="root"></div>
+      <script src="bundle.js"></script>
+   </body>
+
+</html>
+
+```
 
