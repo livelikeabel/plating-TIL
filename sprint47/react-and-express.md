@@ -1590,7 +1590,17 @@ componentWillUnmount(){
 
 
 
+-----
 
+### Contact 데이터 새로고침해도 유지하기 | localStorage
+
+html5의 **localStorage**
+
+> 쿠키랑 조금 비슷함(쿠키는 도메인당 4키로바이트가 최대용량)
+>
+> LocalStorage는 2.5MB ~ 5MB 저장 가능(서버로 전송되지 않음)
+
+- localStorage는 text형식으로만 저장 가능 (JSON.stringify를 사용해야한다.)
 
 
 
