@@ -1190,3 +1190,271 @@ ContactCreate.defaultProps = {
 }
 ```
 
+----
+
+### Contact 엑스트라 기능 구현 | KeyPress, ref
+
+**ref** : js의 id와 비슷한 개념
+
+```javascript
+//ref 사용 예
+//outdated usage 곧 depericate 될 예정
+class Hello extends React.Component {
+    render() {
+        return (
+          <div> 
+            <input ref="myInput">
+            </input>
+          </div>
+        )
+    }
+  
+    componentDidMount() {
+      //ref를 쓰면 dom에 직접 접근 가능
+      this.refs.myInput.value = "Hi, I used ref to do this";
+    }
+}
+ 
+ReactDOM.render(
+  <Hello/>,
+  document.getElementById('app')
+);
+```
+
+
+
+**Current**  : use callback function
+
+```javascript
+class Hello extends React.Component {
+  render() {
+   return (
+       <div> 
+           <input ref={(ref) => { this.input = ref} }>
+            </input>
+          </div>
+        )
+  }
+  
+  componentDidMount() {
+   this.input.value = "I used ref to do this";
+  }
+  
+}
+ReactDOM.render(
+  <Hello/>,
+  document.getElementById('app')
+);
+```
+
+
+
+**ContactCreate.js**
+
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export default class ContactCreate extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            phone: ''
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+    }
+
+    handleChange(e) {
+        let nextState = {};
+        nextState[e.target.name] = e.target.value;//e.target.name이 가리키는건 input의 name이다.
+        this.setState(nextState);
+    }
+
+    handleClick() {
+        const contact = {
+            name: this.state.name,
+            phone: this.state.phone
+        };
+
+        this.props.onCreate(contact);
+
+        this.setState({
+            name:'',
+            phone:''
+        });
+
+        this.nameInput.focus();
+    }
+
+    handleKeyPress(e) {
+        if(e.charCode === 13) { //keycode 13은 enter이다.
+            this.handleClick();
+        }
+    }
+
+    render() {
+        return (
+            <div>
+                <h2>Create Contact</h2>
+                <p>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="name"
+                        value={this.state.name}
+                        onChange={this.handleChange}
+                        ref={(ref) => { this.nameInput = ref }}
+                    />
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="phone"
+                        value={this.state.phone}
+                        onChange={this.handleChange}
+                        onKeyPress={this.handleKeyPress}
+                    />
+                </p>
+                <button onClick={this.handleClick}>Create</button>
+            </div>
+        )
+    }
+}
+
+ContactCreate.propTypes = {
+    onCreate: PropTypes.func
+};
+
+ContactCreate.defaultProps = {
+    onCreate: () => { console.error('onCreate not defined'); }
+}
+```
+
+
+
+**ContactDetails.js**
+
+```javascript
+import React from  'react';
+import PropTypes from 'prop-types';
+
+export default class ContactDetails extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isEdit: false,
+            name: '',
+            phone: ''
+        };
+
+        this.handleToggle = this.handleToggle.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+    }
+
+    handleToggle() {
+        if(!this.state.isEdit) {
+            this.setState({
+                name: this.props.contact.name,
+                phone: this.props.contact.phone
+            });
+        } else {
+            this.handleEdit();
+        }
+
+        this.setState({ //비동기
+            isEdit: !this.state.isEdit
+        });
+    }
+
+    handleChange(e) {
+        let nextState = {};
+        nextState[e.target.name] = e.target.value;//e.target.name이 가리키는건 input의 name이다.
+        this.setState(nextState);
+    }
+
+    handleEdit() {
+        this.props.onEdit(this.state.name, this.state.phone);
+    }
+
+    handleKeyPress(e) {
+        if(e.charCode===13) {
+           this.handleToggle();
+        }
+    }
+
+    render() {
+
+        const details = (
+          <div>
+              <p>{this.props.contact.name}</p>
+              <p>{this.props.contact.phone}</p>
+          </div>
+        );
+
+        const edit = (
+            <div>
+                <p>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="name"
+                        value={this.state.name}
+                        onChange={this.handleChange}
+                    />
+                </p>
+                <p>
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="phone"
+                        value={this.state.phone}
+                        onChange={this.handleChange}
+                        onKeyPress={this.handleKeyPress}
+                    />
+                </p>
+            </div>
+        );
+
+        const view = this.state.isEdit ? edit : details;
+
+        const blank = (<div>Not Selected</div>);
+
+        return (
+            <div>
+                <h2>Details</h2>
+                {this.props.isSelected ? view : blank }
+                <p>
+                    <button onClick={this.handleToggle}>
+                        {this.state.isEdit ? 'OK' : 'Edit'}
+                    </button>
+                    <button onClick={this.props.onRemove}>Remove</button>
+                </p>
+            </div>
+        );
+    }
+}
+
+ContactDetails.defaultProps = {
+    contact: {
+        name: '',
+        phone: ''
+    },
+    onRemove: () => { console.log('onRemove not defined');}, // 지정되지 않을시, 에러를 반환
+    onEdit: () => { console.log('onEdit not defined');}
+}
+
+ContactDetails.propTypes = {// 이게 뭐하는걸까...?
+    contact: PropTypes.object,
+    onRemove: PropTypes.func,
+    onEdit: PropTypes.func
+}
+
+```
+
+
+
