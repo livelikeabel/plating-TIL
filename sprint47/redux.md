@@ -59,3 +59,174 @@ view -> action -> dispatcher -> store -> view
 
 
 Redux 카툰 안내서 : http://bestalign.github.io/2015/10/26/cartoon-intro-to-redux/
+
+-----
+
+### Redux: 프로젝트 구조 및 컴포넌트 생성
+
+```javascript
+//value.js
+//숫자를 보여주는 컴포넌트
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+    number: PropTypes.number
+};
+
+const defaultProps = {
+    number: -1
+};
+
+class Value extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <div>
+              <h1>{this.props.number}</h1>
+            </div>
+        );
+    }
+}
+
+Value.propTypes = propTypes;
+Value.defaultProps = defaultProps;
+
+export default Value;
+
+```
+
+
+```javascript
+//control.js
+//버튼3개를 보여주는 컴포넌트
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const propTypes = {
+    onPlus: PropTypes.func,
+    onSubtract: PropTypes.func,
+    onRandomizeColor: PropTypes.func
+};
+
+function createWarning(funcName) {
+    return () => console.warn(funcName + ' is not defined');
+}
+const defaultProps = {
+    onPlus: createWarning('onPlus'),
+    onSubtract: createWarning('onSubtract'),
+    onRandomizeColor: createWarning('onRandomizeColor')
+};
+
+class Control extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <div>
+              <button onClick={this.props.onPlus}>+</button>
+              <button onClick={this.props.onSubtract}>-</button>
+              <button onClick={this.props.onRandomizeColor}>Randomize Color</button>
+            </div>
+        );
+    }
+}
+
+Control.propTypes = propTypes;
+Control.defaultProps = defaultProps;
+
+export default Control;
+```
+
+
+```javascript
+//counter.js
+//부모 컴포넌트(Smart Component)
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import Value from './Value';
+import Control from './Control';
+
+const propTypes = {
+
+};
+const defaultProps = {
+
+};
+
+class Counter extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <div>
+                <Value/>
+                <Control/>
+            </div>
+        );
+    }
+}
+
+Counter.propTypes = propTypes;
+Counter.defaultProps = defaultProps;
+
+export default Counter;
+
+```
+
+
+```javascript
+//app.js
+import React from 'react'
+import PropTypes from 'prop-types'
+import Counter from './Counter';
+
+const propTypes = {
+
+};
+
+const defaultProps = {
+
+};
+
+class App extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <Counter/>
+        );
+    }
+}
+
+App.propTypes = propTypes;
+App.defaultProps = defaultProps;
+
+export default App;
+```
+
+```javascript
+//index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import App from './components/App';
+
+ReactDOM.render(
+    <App/>,
+    document.getElementById('root')
+);
+
+```
+
