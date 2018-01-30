@@ -230,3 +230,58 @@ ReactDOM.render(
 
 ```
 
+----
+
+### Action
+
+**Action** : <u>작업에 대한 정보</u> 를 지니고 있는 **객체**
+
+> miniproject에 필요한 action ( 대문자와 언더바를 사용함)
+>
+> 1.  값을 증가시키기
+> 2. 값을 감소시키기
+> 3. 새로운 색상 설정하기
+
+Action 객체는 꼭 type을 가지고 있어야 한다.
+
+{ type: "INCREMENT" }
+
+
+
+```javascript
+// actions/ActionTypes.js
+export const INCREMENT = "INCREMENT";
+export const DECREMENT = "DECREMENT";
+export const SET_COLOR = "SET_COLOR";
+```
+
+```javascript
+// actions/index.js
+import * as types from './ActionTypes';
+
+export function increment() {
+    return {
+        type: types.INCREMENT
+    };
+}
+
+export function decrement() {
+    return {
+        type: types.DECREMENT
+    };
+}
+
+export function setColor(color) {
+    return {
+        type: types.SET_COLOR,
+        color: color
+    }
+}
+```
+
+
+
+
+
+
+
