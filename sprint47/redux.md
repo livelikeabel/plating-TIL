@@ -281,7 +281,133 @@ export function setColor(color) {
 
 
 
+----
+
+### Reducer
+
+**: 이전 상태와 액션을 받아서 다음 상태를 반환한다.**(previousState, action) => newState
+
+​	<u>*이전 상태를 변경하는게 아닌, 새로운 상태를 반환하는 것이다.*</u> (기존 상태를 복사하고 변화를 준 다음에 반환)
+
+- 변화를 일으키는 함수
+- 순수해야함( 비동기 작업 x , 인수변경 x , 동일한 인수 = 동일한 결과)
 
 
 
+
+
+```javascript
+// reducers/counter.js
+
+import * as types from '../actions/ActionTypes';
+
+//초기 상태는 상수형태의 객체로 작성한다. //카운터에서 필요한 것은 숫자이다.
+const initialState = {
+    number: 0
+};
+
+//리듀서는 함수이다. export로 내보낸다.
+export default function counter(state, action) {
+    //이 함수가 처음 실행 될 때는 state가 undefined이다. 그럴땐 지정한 initialState를 반환해야한다.
+    if(typeof state === 'undefined'){
+        return initialState;
+    }
+
+    /*...*/
+
+    return state;
+}
+```
+
+es6 문법으로 아래와 같이 사용할 수 있다.
+
+```javascript
+// reducers/counter.js
+//기본인수일때, state가 undefined일 때, initailState 할당
+export default function counter(state = initialState, action) {
+    /*...*/
+
+    return state;
+}
+```
+
+
+
+**Reduce 최종**
+
+```javascript
+//counter.js
+import * as types from '../actions/ActionTypes';
+
+//초기 상태는 상수형태의 객체로 작성한다. //카운터에서 필요한 것은 숫자이다.
+const initialState = {
+    number: 0,
+    dummy: 'dumbdumb',
+    dumbObject: {
+        d: 0,
+        u: 1,
+        m: 2,
+        b: 3
+    }
+};
+
+//리듀서는 함수이다. export로 내보낸다.
+export default function counter(state = initialState, action) {
+    /*...*/
+    switch(action.type) {
+        case types.INCREMENT:
+            return {
+               ...state,
+               number: state.number + 1,
+               dumbObject: { ...state.dumbObject, u: 0}
+            };
+        case types.DECREMENT:
+            return {
+                ...state,
+                number: state.number - 1
+            };
+        default:
+            return state;
+    }
+}
+
+```
+
+
+
+```javascript
+//ui.js
+import * as types from '../actions/ActionTypes';
+
+const initialState = {
+    color: [255, 255, 255]
+};
+
+export default function ui(state = initialState, action) {
+    if(action.type === types.SET_COLOR) {
+        return {
+            color: action.color
+        };
+    } else {
+        return state;
+    }
+}
+```
+
+
+
+```javascript
+//index.js
+
+import { combineReducers } from 'redux';//redux에서 제공하는 combineReducers함수
+import counter from './counter';
+import ui from './ui';
+
+const reducers = combineReducers({
+    counter, ui
+});
+
+
+export default reducers;
+```
 
