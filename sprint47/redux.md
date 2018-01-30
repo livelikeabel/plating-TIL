@@ -411,3 +411,44 @@ const reducers = combineReducers({
 export default reducers;
 ```
 
+----
+
+### Store
+
+어플리케이션의 현재 상태를 지니고 있음(리덕스를 사용하는 어플리케이션은 단 하나의 store를 가지고 있어야한다.)
+
+```javascript
+//index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+import App from './components/App';
+
+import { createStore } from 'redux';
+import reducers from './reducers';
+
+const store = createStore(reducers);
+
+ReactDOM.render(
+    <App/>,
+    document.getElementById('root')
+);
+```
+
+
+
+#### **store가 하는 일**
+
+**dispatch(action)** : action을 reducer로 보낸다.
+
+->  reducer가 어떤 변화가 필요한지 알아내서 변화를 주고, 새 상태를 주면 현 상태에 갈아끼운다.
+
+**getState()** : 현재 상태를 반환하는 함수
+
+**subscribe(listener)** : 상태가 바뀔 때마다 실행 할 함수를 등록하는 것이다. listener는 상태가 바뀔 때마다 실행될 콜백 함수이다.
+
+**replaceReducer(nextReducer)** : hotreloading과 코드 분할을 구현할 때 사용함(보통 사용될 일 없음)
+
+----
+
